@@ -9,7 +9,8 @@ include .env
 export
 
 run:
-	@go run main.go
+	@go mod tidy && \
+	go run cmd/todoapp/main.go
 
 env-up:
 	@docker-compose up -d
@@ -19,6 +20,16 @@ env-port-forward:
 
 env-port-close:
 	@docker-compose down port-forwarder
+
+env-cleanup: ## env: Очистить окружение проекта
+	@read -p "Remove postgres volume?. [y/N]: " ans; \
+	if [ "$$ans" = "y" ]; then \
+		docker compose down postgres port-forwarder && \
+		docker volume rm todo-app-go_postgres-data && \
+		echo "Cleanup environment files"; \
+	else \
+		echo "Environment cleanup cancelled"; \
+	fi
 
 migrate-create:
 	@if [ -z "$(name)" ]; then \
