@@ -1,4 +1,4 @@
-package user_postgres_repository
+package users_postgres_repository
 
 import core_postgres_pool "github.com/vladislav-koval/todo-app/internal/core/repository/postgres/pool"
 

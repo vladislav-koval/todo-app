@@ -1,4 +1,4 @@
-package user_transport_http
+package users_transport_http
 
 import (
 	"net/http"
@@ -23,7 +23,7 @@ func (h *UsersHttpHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var req CreateUserRequest
 
 	if err := core_http_request.DecodeAndValidateRequest(r, &req); err != nil {
-		responseHandler.ErrorResponse(err, "failed to decode and validate HTTP request ")
+		responseHandler.ErrorResponse(err, "failed to decode and validate HTTP request")
 		return
 	}
 

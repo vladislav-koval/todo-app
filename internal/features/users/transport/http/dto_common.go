@@ -1,4 +1,4 @@
-package user_transport_http
+package users_transport_http
 
 import "github.com/vladislav-koval/todo-app/internal/core/domain"
 
