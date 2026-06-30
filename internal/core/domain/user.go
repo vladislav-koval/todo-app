@@ -36,11 +36,11 @@ func (u *User) Validate() error {
 	fullNameLen := len([]rune(u.FullName))
 
 	if fullNameLen < 3 || fullNameLen > 100 {
-		return fmt.Errorf("invalid `fullName` length %d: %w", fullNameLen, core_errors.ErrInvalidArgument)
+		return fmt.Errorf("invalid `FullName` length %d: %w", fullNameLen, core_errors.ErrInvalidArgument)
 	}
 
 	if u.PhoneNumber != nil && !phoneRegexp.MatchString(*u.PhoneNumber) {
-		return fmt.Errorf("invalid `phoneNumber` %s: %w", *u.PhoneNumber, core_errors.ErrInvalidArgument)
+		return fmt.Errorf("invalid `PhoneNumber` %s: %w", *u.PhoneNumber, core_errors.ErrInvalidArgument)
 	}
 
 	return nil
@@ -84,7 +84,7 @@ func NewUserPatch(fullName Nullable[string], phoneNumber Nullable[string]) UserP
 
 func (p *UserPatch) Validate() error {
 	if p.FullName.Set && p.FullName.Value == nil {
-		return fmt.Errorf("`fullName` cannot be nil: %w", core_errors.ErrInvalidArgument)
+		return fmt.Errorf("`FullName` cannot be nil: %w", core_errors.ErrInvalidArgument)
 	}
 
 	return nil

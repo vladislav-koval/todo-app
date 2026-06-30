@@ -11,9 +11,9 @@ import (
 	"github.com/vladislav-koval/todo-app/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/vladislav-koval/todo-app/internal/core/transport/http/middleware"
 	core_http_server "github.com/vladislav-koval/todo-app/internal/core/transport/http/server"
-	user_postgres_repository "github.com/vladislav-koval/todo-app/internal/features/users/repository/postgres"
-	user_service "github.com/vladislav-koval/todo-app/internal/features/users/service"
-	user_transport_http "github.com/vladislav-koval/todo-app/internal/features/users/transport/http"
+	users_postgres_repository "github.com/vladislav-koval/todo-app/internal/features/users/repository/postgres"
+	users_service "github.com/vladislav-koval/todo-app/internal/features/users/service"
+	users_transport_http "github.com/vladislav-koval/todo-app/internal/features/users/transport/http"
 	"go.uber.org/zap"
 )
 
@@ -35,9 +35,9 @@ func main() {
 	defer pool.Close()
 
 	logger.Debug("initializing feature", zap.String("feature", "users"))
-	userRepository := user_postgres_repository.NewUsersRepository(pool)
-	userService := user_service.NewUsersService(userRepository)
-	usersTransportHttp := user_transport_http.NewUsersHttpHandler(userService)
+	userRepository := users_postgres_repository.NewUsersRepository(pool)
+	userService := users_service.NewUsersService(userRepository)
+	usersTransportHttp := users_transport_http.NewUsersHttpHandler(userService)
 
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(

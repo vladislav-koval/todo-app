@@ -1,4 +1,4 @@
-package user_postgres_repository
+package users_postgres_repository
 
 import (
 	"github.com/vladislav-koval/todo-app/internal/core/domain"
