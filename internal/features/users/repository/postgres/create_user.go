@@ -7,15 +7,16 @@ import (
 	"github.com/vladislav-koval/todo-app/internal/core/domain"
 )
 
-func (u *UsersRepository) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.pool.OpTimeout())
+func (r *UsersRepository) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	query := `INSERT INTO todoapp.users (full_name, phone_number) 
 				VALUES ($1, $2) 
-				RETURNING id, version, full_name, phone_number`
+				RETURNING id, version, full_name, phone_number;
+	`
 
-	row := u.pool.QueryRow(ctx, query, user.FullName, user.PhoneNumber)
+	row := r.pool.QueryRow(ctx, query, user.FullName, user.PhoneNumber)
 
 	var userModel UserModel
 	err := row.Scan(&userModel.ID,

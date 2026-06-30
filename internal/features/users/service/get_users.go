@@ -8,8 +8,7 @@ import (
 	core_errors "github.com/vladislav-koval/todo-app/internal/core/errors"
 )
 
-func (u *UsersService) GetUsers(ctx context.Context, limit *int, offset *int) ([]domain.User, error) {
-
+func (s *UsersService) GetUsers(ctx context.Context, limit *int, offset *int) ([]domain.User, error) {
 	if limit != nil && *limit < 0 {
 		return nil, fmt.Errorf("limit must be non-negative: %w", core_errors.ErrInvalidArgument)
 	}
@@ -18,7 +17,7 @@ func (u *UsersService) GetUsers(ctx context.Context, limit *int, offset *int) ([
 		return nil, fmt.Errorf("offset must be non-negative: %w", core_errors.ErrInvalidArgument)
 	}
 
-	users, err := u.usersRepository.GetUsers(ctx, limit, offset)
+	users, err := s.usersRepository.GetUsers(ctx, limit, offset)
 
 	if err != nil {
 		return nil, fmt.Errorf("get users from repo: %w", err)

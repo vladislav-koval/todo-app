@@ -5,13 +5,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/vladislav-koval/todo-app/internal/core/domain"
 	core_errors "github.com/vladislav-koval/todo-app/internal/core/errors"
+	core_postgres_pool "github.com/vladislav-koval/todo-app/internal/core/repository/postgres/pool"
 )
 
-func (u *UsersRepository) PatchUser(ctx context.Context, id int, user domain.User) (domain.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.pool.OpTimeout())
+func (r *UsersRepository) PatchUser(ctx context.Context, id int, user domain.User) (domain.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	query := `
@@ -26,9 +26,9 @@ func (u *UsersRepository) PatchUser(ctx context.Context, id int, user domain.Use
 		    version, 
 		    full_name,
 		    phone_number;
-`
+	`
 
-	row := u.pool.QueryRow(ctx, query, user.FullName, user.PhoneNumber, id, user.Version)
+	row := r.pool.QueryRow(ctx, query, user.FullName, user.PhoneNumber, id, user.Version)
 
 	var userModel UserModel
 
@@ -40,7 +40,7 @@ func (u *UsersRepository) PatchUser(ctx context.Context, id int, user domain.Use
 	)
 
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
 				"user with id='%d' concurrently accessed: %w",
 				id,
