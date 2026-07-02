@@ -51,12 +51,5 @@ func (r *UsersRepository) PatchUser(ctx context.Context, id int, user domain.Use
 		return domain.User{}, fmt.Errorf("scan error: %w", err)
 	}
 
-	return domain.NewUser(
-			userModel.ID,
-			userModel.Version,
-			userModel.FullName,
-			userModel.PhoneNumber,
-		),
-		nil
-
+	return userDomainFromModel(userModel), nil
 }
