@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	core_config "github.com/vladislav-koval/todo-app/internal/core/config"
 	core_logger "github.com/vladislav-koval/todo-app/internal/core/logger"
 	"github.com/vladislav-koval/todo-app/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/vladislav-koval/todo-app/internal/core/transport/http/middleware"
@@ -21,13 +22,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var (
-	timeZone = time.UTC
-)
-
 func main() {
-	time.Local = timeZone
-
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 	logger, err := core_logger.NewLogger(core_logger.NewConfigMust())
@@ -37,7 +32,9 @@ func main() {
 	}
 	defer logger.Close()
 
-	logger.Debug("application time zone", zap.Any("zone", timeZone))
+	config := core_config.NewConfigMust()
+	time.Local = config.TimeZone
+	logger.Debug("application time zone", zap.Any("zone", config.TimeZone))
 
 	logger.Debug("initializing pgx pool")
 	pool, err := core_pgx_pool.NewPool(ctx, core_pgx_pool.NewConfigMust())
@@ -47,7 +44,6 @@ func main() {
 	defer pool.Close()
 
 	logger.Debug("initializing feature", zap.String("feature", "users"))
-
 	userRepository := users_postgres_repository.NewUsersRepository(pool)
 	userService := users_service.NewUsersService(userRepository)
 	usersTransportHttp := users_transport_http.NewUsersHttpHandler(userService)
