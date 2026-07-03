@@ -49,5 +49,9 @@ func getUserIdLimitOffsetQueryParam(r *http.Request) (*int, *int, *int, error) {
 
 	limit, offset, err := core_http_request.GetLimitOffsetQueryParams(r)
 
-	return userID, limit, offset, err
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return userID, limit, offset, nil
 }

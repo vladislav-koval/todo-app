@@ -5,19 +5,20 @@ import (
 	"fmt"
 
 	"github.com/vladislav-koval/todo-app/internal/core/domain"
-	core_errors "github.com/vladislav-koval/todo-app/internal/core/errors"
+	core_pagination "github.com/vladislav-koval/todo-app/internal/core/pagination"
 )
 
 func (s *UsersService) GetUsers(ctx context.Context, limit *int, offset *int) ([]domain.User, error) {
-	if limit != nil && *limit < 0 {
-		return nil, fmt.Errorf("limit must be non-negative: %w", core_errors.ErrInvalidArgument)
+	pagination, err := core_pagination.NewPagination(limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("create pagination: %w", err)
 	}
 
-	if offset != nil && *offset < 0 {
-		return nil, fmt.Errorf("offset must be non-negative: %w", core_errors.ErrInvalidArgument)
-	}
-
-	users, err := s.usersRepository.GetUsers(ctx, limit, offset)
+	users, err := s.usersRepository.GetUsers(
+		ctx,
+		pagination.Limit,
+		pagination.Offset,
+	)
 
 	if err != nil {
 		return nil, fmt.Errorf("get users from repo: %w", err)

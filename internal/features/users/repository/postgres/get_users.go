@@ -7,7 +7,7 @@ import (
 	"github.com/vladislav-koval/todo-app/internal/core/domain"
 )
 
-func (r *UsersRepository) GetUsers(ctx context.Context, limit *int, offset *int) ([]domain.User, error) {
+func (r *UsersRepository) GetUsers(ctx context.Context, limit int, offset int) ([]domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 

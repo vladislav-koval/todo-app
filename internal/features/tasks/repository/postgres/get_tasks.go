@@ -8,7 +8,7 @@ import (
 	"github.com/vladislav-koval/todo-app/internal/core/domain"
 )
 
-func (r *TasksRepository) GetTasks(ctx context.Context, userID *int, limit *int, offset *int) ([]domain.Task, error) {
+func (r *TasksRepository) GetTasks(ctx context.Context, userID *int, limit int, offset int) ([]domain.Task, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
