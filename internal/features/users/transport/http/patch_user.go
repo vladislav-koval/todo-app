@@ -73,7 +73,7 @@ func (h *UsersHttpHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	var req PatchUserRequest
 
 	if err := core_http_request.DecodeAndValidateRequest(r, &req); err != nil {
-		responseHandler.ErrorResponse(err, "failed to decode and validate HTTP request ")
+		responseHandler.ErrorResponse(err, "failed to decode and validate HTTP request")
 		return
 	}
 

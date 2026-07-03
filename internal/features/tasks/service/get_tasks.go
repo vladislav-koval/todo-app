@@ -1,4 +1,4 @@
-package users_service
+package tasks_service
 
 import (
 	"context"
@@ -8,21 +8,23 @@ import (
 	core_pagination "github.com/vladislav-koval/todo-app/internal/core/pagination"
 )
 
-func (s *UsersService) GetUsers(ctx context.Context, limit *int, offset *int) ([]domain.User, error) {
+func (s *TasksService) GetTasks(ctx context.Context, userID *int, limit *int, offset *int) ([]domain.Task, error) {
 	pagination, err := core_pagination.NewPagination(limit, offset)
+
 	if err != nil {
 		return nil, fmt.Errorf("create pagination: %w", err)
 	}
 
-	users, err := s.usersRepository.GetUsers(
+	tasks, err := s.tasksRepository.GetTasks(
 		ctx,
+		userID,
 		pagination.Limit,
 		pagination.Offset,
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("get users from repo: %w", err)
+		return nil, fmt.Errorf("get tasks from repo: %w", err)
 	}
 
-	return users, nil
+	return tasks, nil
 }

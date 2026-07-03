@@ -59,3 +59,12 @@ migrate-action:
 		-path ./migrations \
 		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable \
 		$(action)
+
+logs-cleanup: ## env: Очистить окружение проекта
+	@read -p "Remove logs dir?. [y/N]: " ans; \
+	if [ "$$ans" = "y" ]; then \
+		rm -rf ./out \
+		echo "Cleanup log files"; \
+	else \
+		echo "Logs cleanup cancelled"; \
+	fi

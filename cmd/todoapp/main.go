@@ -6,11 +6,16 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	core_config "github.com/vladislav-koval/todo-app/internal/core/config"
 	core_logger "github.com/vladislav-koval/todo-app/internal/core/logger"
 	"github.com/vladislav-koval/todo-app/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/vladislav-koval/todo-app/internal/core/transport/http/middleware"
 	core_http_server "github.com/vladislav-koval/todo-app/internal/core/transport/http/server"
+	tasks_postgres_repository "github.com/vladislav-koval/todo-app/internal/features/tasks/repository/postgres"
+	tasks_service "github.com/vladislav-koval/todo-app/internal/features/tasks/service"
+	tasks_transport_http "github.com/vladislav-koval/todo-app/internal/features/tasks/transport/http"
 	users_postgres_repository "github.com/vladislav-koval/todo-app/internal/features/users/repository/postgres"
 	users_service "github.com/vladislav-koval/todo-app/internal/features/users/service"
 	users_transport_http "github.com/vladislav-koval/todo-app/internal/features/users/transport/http"
@@ -27,6 +32,10 @@ func main() {
 	}
 	defer logger.Close()
 
+	config := core_config.NewConfigMust()
+	time.Local = config.TimeZone
+	logger.Debug("application time zone", zap.Any("zone", config.TimeZone))
+
 	logger.Debug("initializing pgx pool")
 	pool, err := core_pgx_pool.NewPool(ctx, core_pgx_pool.NewConfigMust())
 	if err != nil {
@@ -39,6 +48,11 @@ func main() {
 	userService := users_service.NewUsersService(userRepository)
 	usersTransportHttp := users_transport_http.NewUsersHttpHandler(userService)
 
+	logger.Debug("initializing feature", zap.String("feature", "tasks"))
+	taskRepository := tasks_postgres_repository.NewTasksRepository(pool)
+	tasksService := tasks_service.NewTasksService(taskRepository)
+	tasksTransportHttp := tasks_transport_http.NewTasksHttpHandler(tasksService)
+
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),
@@ -50,7 +64,9 @@ func main() {
 	)
 
 	apiVersionRouterV1 := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
+
 	apiVersionRouterV1.RegisterRoutes(usersTransportHttp.Routes()...)
+	apiVersionRouterV1.RegisterRoutes(tasksTransportHttp.Routes()...)
 
 	//apiVersionRouterV2 := core_http_server.NewApiVersionRouter(
 	//core_http_server.ApiVersion2,
