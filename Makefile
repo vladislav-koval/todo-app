@@ -1,12 +1,14 @@
 # Для Windows используем Bash из Git, для других ОС — системный путь
 ifeq ($(OS),Windows_NT)
-    SHELL := C:/Program Files/Git/bin/bash.exe
+    SHELL := C:/Program\ Files/Git/bin/bash.exe
 else
     SHELL := bash
 endif
 
 include .env
 export
+
+export PROJECT_ROOT := $(CURDIR)
 
 run:
 	@go mod tidy && \
@@ -68,3 +70,9 @@ logs-cleanup: ## env: Очистить окружение проекта
 	else \
 		echo "Logs cleanup cancelled"; \
 	fi
+
+todoapp-deploy:
+	@docker-compose up -d --build todoapp
+
+ps:
+	@docker-compose ps
