@@ -8,14 +8,13 @@ import (
 )
 
 type Config struct {
-	TimeZone           *time.Location `envconfig:"TIME_ZONE" default:"UTC"`
-	HttpAllowedOrigins string         `envconfig:"HTTP_ALLOWED_ORIGINS"`
+	TimeZone *time.Location `envconfig:"TIME_ZONE" default:"UTC"`
 }
 
 func NewConfig() (*Config, error) {
 	var config Config
 
-	if err := envconfig.Process("MAIN", &config); err != nil {
+	if err := envconfig.Process("CORE", &config); err != nil {
 		return nil, fmt.Errorf("failed to process env core config: %w", err)
 	}
 
