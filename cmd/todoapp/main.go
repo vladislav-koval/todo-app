@@ -23,8 +23,15 @@ import (
 	users_service "github.com/vladislav-koval/todo-app/internal/features/users/service"
 	users_transport_http "github.com/vladislav-koval/todo-app/internal/features/users/transport/http"
 	"go.uber.org/zap"
+
+	_ "github.com/vladislav-koval/todo-app/docs"
 )
 
+// @title 		Golang TODO API
+// @version 	1.0
+// @description Todo Application REST-API scheme
+// @host 		http://127.0.0.1:5050
+// @BasePath 	/api/v1
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
@@ -65,6 +72,7 @@ func main() {
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),
 		logger,
+		core_http_middleware.CORS(),
 		core_http_middleware.RequestID(),
 		core_http_middleware.Logger(logger),
 		core_http_middleware.Trace(),
@@ -84,6 +92,7 @@ func main() {
 	//apiVersionRouterV2.RegisterRoutes(usersTransportHttp.Routes()...)
 
 	httpServer.RegisterApiRoutes(apiVersionRouterV1)
+	httpServer.RegisterSwagger()
 
 	if err := httpServer.Run(ctx); err != nil {
 		logger.Error("Failed to start server", zap.Error(err))

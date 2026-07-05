@@ -9,10 +9,20 @@ import (
 	core_http_response "github.com/vladislav-koval/todo-app/internal/core/transport/http/response"
 )
 
-type GetTasksRequest struct{}
-
 type GetTasksResponse []TaskDTOResponse
 
+// GetTasks 	godoc
+// @summary 	Список задач
+// @description Получение списка задач с опциональной пагинацией и/или фильтрацией по id автора
+// @Tags 		tasks
+// @Produce 	json
+// @Param 		user_id query int false "Фильтрация задач по ID автора"
+// @Param 		limit query int false "Размер страницы с задачами"
+// @Param 		offset query int false "Смещение страницы с задачами"
+// @Success 	200 {object} GetTasksResponse	"Список задач"
+// @Failure 	400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 	500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router 		/tasks [get]
 func (h *TaskHttpHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	log := core_logger.FromContext(r.Context())
 	responseHandler := core_http_response.NewHttpResponseHandler(log, w)
