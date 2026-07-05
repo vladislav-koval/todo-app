@@ -1,0 +1,11 @@
+.git
+.idea
+.vscode
+.gocache/
+
+out
+
+*.log
+*.exe
+
+README.md
