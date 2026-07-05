@@ -33,6 +33,15 @@ func (h HttpResponseHandler) JSONResponse(responseBody any, statusCode int) {
 	}
 }
 
+func (h HttpResponseHandler) HtmlResponse(html []byte) {
+	h.rw.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	h.rw.WriteHeader(http.StatusOK)
+	if _, err := h.rw.Write(html); err != nil {
+		h.log.Error("failed to write HTML HTTP response", zap.Error(err))
+	}
+}
+
 func (h *HttpResponseHandler) NoContentResponse() {
 	h.rw.Header().Set("Content-Type", "application/json")
 

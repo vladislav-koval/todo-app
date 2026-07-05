@@ -22,6 +22,9 @@ import (
 	users_postgres_repository "github.com/vladislav-koval/todo-app/internal/features/users/repository/postgres"
 	users_service "github.com/vladislav-koval/todo-app/internal/features/users/service"
 	users_transport_http "github.com/vladislav-koval/todo-app/internal/features/users/transport/http"
+	web_fs_repository "github.com/vladislav-koval/todo-app/internal/features/web/repository/embed"
+	web_service "github.com/vladislav-koval/todo-app/internal/features/web/service"
+	web_transport_http "github.com/vladislav-koval/todo-app/internal/features/web/transport/http"
 	"go.uber.org/zap"
 
 	_ "github.com/vladislav-koval/todo-app/docs"
@@ -68,11 +71,16 @@ func main() {
 	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
 	statisticsTransportHttp := statistics_transport_http.NewStatisticsHttpHandler(statisticsService)
 
+	logger.Debug("initializing feature", zap.String("feature", "web"))
+	webRepository := web_fs_repository.NewWebRepository()
+	webService := web_service.NewWebService(webRepository)
+	webTransportHttp := web_transport_http.NewWebHttpHandler(webService)
+
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),
 		logger,
-		core_http_middleware.CORS(),
+		core_http_middleware.CORS(config.HttpAllowedOrigins),
 		core_http_middleware.RequestID(),
 		core_http_middleware.Logger(logger),
 		core_http_middleware.Trace(),
@@ -92,6 +100,7 @@ func main() {
 	//apiVersionRouterV2.RegisterRoutes(usersTransportHttp.Routes()...)
 
 	httpServer.RegisterApiRoutes(apiVersionRouterV1)
+	httpServer.RegisterRoutes(webTransportHttp.Routes()...)
 	httpServer.RegisterSwagger()
 
 	if err := httpServer.Run(ctx); err != nil {
