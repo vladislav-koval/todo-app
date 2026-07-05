@@ -1,8 +1,8 @@
 services:
   todoapp:
     build:
-      context: ${PROJECT_ROOT}
-      dockerfile: ${PROJECT_ROOT}/cmd/todoapp/Dockerfile
+      context: .
+      dockerfile: ./cmd/todoapp/Dockerfile
     container_name: todoapp
     environment:
       - HTTP_ADDR=:5050
@@ -13,10 +13,11 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_TIMEOUT=${POSTGRES_TIMEOUT}
       - LOGGER_LEVEL=${LOGGER_LEVEL}
-      - TIME_ZONE=${TIME_ZONE}
       - LOGGER_FOLDER=/app/out/logs
+      - MAIN_TIME_ZONE=${MAIN_TIME_ZONE}
+      - MAIN_HTTP_ALLOWED_ORIGINS=${MAIN_HTTP_ALLOWED_ORIGINS}
     volumes:
-      - ${PROJECT_ROOT}/out/logs:/app/out/logs
+      - ./out/logs:/app/out/logs
     restart: always
     ports:
       - "5050:5050"
@@ -53,7 +54,7 @@ services:
 
   swagger:
     build:
-      context: ${PROJECT_ROOT}
+      context: .
       dockerfile_inline: |
         FROM golang:1.26.1-alpine
         RUN apk add --no-cache git
@@ -61,7 +62,7 @@ services:
         WORKDIR /code
         ENTRYPOINT ["swag"]
     volumes:
-      - ${PROJECT_ROOT}:/code
+      - .:/code
 
 
 volumes:
